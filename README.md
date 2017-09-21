@@ -7,7 +7,8 @@ Most of the scripts are pretty small and self-explanatory.  In
 addition most directories contain Makefiles that should give a clear
 indication of how the scripts should be called.  Generate
 `semiprimes.txt` first, then generate the SAT-instances and then let
-the solvers solve those instances.
+the solvers solve those instances.  Make sure you include a (symbolic)
+link to the solvers in the corresponding directories.
 
 The Karatsuba instances were generated with
 [ToughSat](https://toughsat.appspot.com/).  Reproducing the instances
