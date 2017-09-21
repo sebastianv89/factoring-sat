@@ -26,7 +26,6 @@ for line in sys.stdin:
                 continue
         else:
             call = '{ex} -rnd-init -rnd-seed={seed}'
-            continue
         for encoding in os.listdir(solver):
             if not os.path.isdir(os.path.join(solver, encoding)):
                 continue
