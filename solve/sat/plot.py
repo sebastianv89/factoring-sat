@@ -30,7 +30,7 @@ xs = [x for x, y in times]
 ys = [y for x, y in times]
 
 # determined from inspection of data
-fit_lower_bound = 20
+fit_lower_bound = 30
 fit_upper_bound = 50
 xx = [x for x, y in times if fit_lower_bound <= x and x <= fit_upper_bound]
 yy = [np.median(y) for x, y in times if fit_lower_bound <= x and x <= fit_upper_bound]

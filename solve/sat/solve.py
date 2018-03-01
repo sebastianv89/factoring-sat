@@ -21,8 +21,8 @@ for line in sys.stdin:
         ex = os.path.join(solver, solver)
         if solver == 'cryptominisat5':
             call = '{ex} --random={seed}'
-            if n > 45:
-                # no longer testing cryptominisat
+            if n >= 45:
+                # no longer testing cryptominisat: it is too slow
                 continue
         else:
             call = '{ex} -rnd-init -rnd-seed={seed}'
@@ -42,7 +42,9 @@ for line in sys.stdin:
                 if os.path.exists(solution):
                     print('skipping existing {}'.format(solution), file=sys.stderr)
                     continue
-                if n >= 55 and seed != '1000':
+                if (n >= 30 and int(seed) > 5000) or \
+                   (n >= 45 and int(seed) > 6050) or \
+                   (n >= 55 and seed != '1000'):
                     print('skipping seed {} for {}'.format(seed, solution), file=sys.stderr)
                     continue
                 sp = call.format(ex=ex, seed=seed).split()
