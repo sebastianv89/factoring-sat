@@ -42,6 +42,7 @@ for line in sys.stdin:
                 print('seed {} timed out'.format(seed))
         if solver_output is not None:
             break
+        time_bound *= 2
     if solver_output is None:
         print('No solution found for {}'.format(instance_file))
         with open('./unsolved.txt', 'a') as fout:
