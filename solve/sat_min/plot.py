@@ -42,12 +42,20 @@ pct_yf = poly.Polynomial(pct_yc)
 pct_yr2 = rsquared(np.log2(pct_ys), pct_yf(xs))
 print('ypct: {} (r^2: {})'.format(pct_yf, pct_yr2))
 
+# compute the minimum
+min_ys = [min(y) for y in ys]
+min_yc = poly.polyfit(xs, np.log2(min_ys), 1)
+min_yf = poly.Polynomial(min_yc)
+min_yr2 = rsquared(np.log2(min_ys), min_yf(xs))
+print('ymin: {} (r^2: {})'.format(min_yf, min_yr2))
+
 # plot the data
 plt.boxplot(ys, positions=xs)
 
 # plot the fits
 plt.plot(xs, np.exp2(yfit(xs)), 'g')
 plt.plot(xs, np.exp2(pct_yf(xs)), 'c')
+plt.plot(xs, np.exp2(min_yf(xs)), 'c')
 
 # label data etc.
 plt.yscale('log')

@@ -29,7 +29,7 @@ for line in sys.stdin:
     with open(instance_file, 'rb') as fin:
         instance = fin.read()
     call_templ = './maplecomsps -rnd-init -rnd-seed={}'
-    time_bound = int(math.ceil(2**-21.28 * 2**(0.529*n))) # estimated minimum solve time
+    time_bound = int(math.ceil(2**-21.09 * 2**(0.523*n))) # estimated minimum solve time
     best_time, best_seed, solver_output = float('inf'), None, None
     for i in range(6):
         for seed in range(1, 101): # testing 100 different seeds
