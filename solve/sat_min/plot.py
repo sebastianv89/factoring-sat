@@ -23,9 +23,9 @@ for line in sys.stdin:
     t = float(words[5])
     times[n].append(t)
 
-times = sorted(times.items())
-xs = [x for x, _ in times]
-ys = [y for _, y in times]
+sorted_times = sorted(times.items())
+xs = [x for x, _ in sorted_times]
+ys = [y for _, y in sorted_times]
 
 # compute the fit
 med_ys = list(map(np.median, ys))
@@ -64,4 +64,15 @@ ax.set_xticks(xs)
 ax.set_xticklabels(xs)
 plt.xlabel('Semiprime length (bits)')
 plt.ylabel('Time (seconds)')
-plt.show()
+if len(sys.argv) < 2:
+    plt.show()
+else:
+    # focus on one particular bitsize n
+    _, bins, _ = plt.hist(times[int(sys.argv[1])])
+    plt.clf()
+    logbins = np.logspace(np.log10(bins[0]), np.log10(bins[-1]), len(bins))
+    plt.hist(times[48], bins=logbins)
+    plt.xscale('log')
+    plt.xlabel('Time (seconds)')
+    plt.ylabel('Frequency (%)')
+    plt.show()
