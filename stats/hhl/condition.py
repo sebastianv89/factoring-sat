@@ -14,6 +14,7 @@ from collections import OrderedDict, Counter
 from numbers import Number, Integral
 from scipy.sparse import lil_matrix, csr_matrix
 from scipy.sparse.linalg import svds
+from scipy.io import mmwrite
 import numpy as np
 
 
@@ -596,7 +597,8 @@ def condition(matrix):
     '''Compute the conditional number of the (sparse) matrix'''
     singular_max = svds(matrix, k=1, which='LM', return_singular_vectors=False)
     singular_min = svds(matrix, k=1, which='SM', return_singular_vectors=False)
-    return singular_max[0] / singular_min[0]
+    return singular_max[0] / singular_min[0], singular_max, singular_min
+
 
 solved = []
 with open('condition.txt') as fin:
@@ -612,15 +614,16 @@ for line in sys.stdin:
     n, p, q, pq = map(int, line.split())
     instance_file = '../../instances/long_3sat/{:03}_{}_{}.dimacs'.format(n, p, q)
     if not os.path.exists(instance_file):
-        print('skipping non-existing {}\n'.format(instance), file=sys.stderr)
+        print('skipping non-existing {}'.format(instance), file=sys.stderr)
         continue
     if (p, q) in solved:
-        print('skipping solved {} {} {} {}\n'.format(n, p, q, pq), file=sys.stderr)
+        print('skipping solved {} {} {} {}'.format(n, p, q, pq), file=sys.stderr)
         continue
     clauses, var_count = read_clauses(instance_file)
     eqs = list(clauses_to_boolean_system(clauses, var_count))
     m = boolean_system_to_modified_macaulay(eqs, 2*var_count)
     print('{}: {} ({})'.format(datetime.datetime.now(), instance_file, m.shape), file=sys.stderr)
-    c = condition(m)
-    print('{} {} {} {} {} {} {}'.format(n, p, q, pq, c, m.shape[0], m.shape[1]))
+    #mmwrite('./matrices/{:03}_{}_{}_{}.mtx'.format(n, p, q, pq), m)
+    c, s1, sn = condition(m)
+    print('{} {} {} {} {} {} {}'.format(n, p, q, pq, c, s1, sn, m.shape[0], m.shape[1]))
     sys.stdout.flush()
