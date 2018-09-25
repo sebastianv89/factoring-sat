@@ -5,7 +5,7 @@ def bits(n):
     return ceil(log(n+1, 2))
 
 # let m = bitsize(n). forall m <= M[i]: generate N[i] primes
-N = [100, 10]
+N = [100, 100]
 M = [50, 100]
 
 # generate all semi-primes when there's less than N[0] per m
@@ -25,6 +25,8 @@ for n in count(2):
         del ns[bits(n)]
         m = bits(n)
         break
+
+print('# Less than {} semi-primes for bitsize < {}\n'.format(N[0], m))
 
 # generate N[i] semi-primes per m (bitsize <= M[i])
 for i in range(len(M)):
