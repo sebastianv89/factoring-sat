@@ -17,7 +17,9 @@ import System.Environment (getProgName, getArgs)
 import Test.HUnit
 import Test.QuickCheck
 
-cnfDebug = False
+cnfDebug = False -- show debug comments in the dimacs output
+maxThree = False -- make sure every clause has at most three literals
+minThree = False -- make sure every clause has at least three literals
 
 -- lsb first
 fromBools :: Integral n => [Bool] -> n
@@ -167,15 +169,15 @@ toDimacs n c = header ++ toDimacsClauses c
 
 seToDimacs :: SymEval a -> String
 seToDimacs se = toDimacs (n-1) d
-  where (_, n, d) = runRWS se cnfDebug 1
+  where (_, n, d) = runRWS se (cnfDebug, maxThree, minThree) 1
 
 addClauses :: MonadWriter Desc m => [[Bit]] -> m ()
 addClauses = tell . Cnf . map Clause
 
-debugComment :: (MonadReader Bool m, MonadWriter Desc m) => String -> m ()
-debugComment c = do debug <- ask
-                    tell $ if debug then Cnf [Comment c]
-                                    else mempty
+debugComment :: (MonadReader (Bool, Bool, Bool) m, MonadWriter Desc m) => String -> m ()
+debugComment c = do
+  (debug, _, _) <- ask
+  tell $ if debug then Cnf [Comment c] else mempty
 
 addComment :: MonadWriter Desc m => String -> m ()
 addComment c = tell $ Cnf [Comment c]
@@ -183,10 +185,10 @@ addComment c = tell $ Cnf [Comment c]
 -- Symbolic evaluation of the gate/circuit.  The writer logs
 -- information about the circuit, while the State can be used
 -- to introduce new variables.
-type SymEval x = RWS Bool Desc Int x
+type SymEval x = RWS (Bool, Bool, Bool) Desc Int x
 
 eval :: SymEval x -> x
-eval se = fst $ evalRWS se cnfDebug 1
+eval se = fst $ evalRWS se (cnfDebug, maxThree, minThree) 1
 
 notGate :: Bit -> SymEval Bit
 notGate = return . neg
@@ -197,9 +199,14 @@ nandGate (Val False) y       = return (Val True)
 nandGate (Val True)  y       = return (neg y)
 nandGate x           y       = do
   z <- nextVar
-  addClauses [[x, z]
-             ,[y, z]
-             ,[neg x, neg y, neg z]]
+  (_, _, minThree) <- ask
+  if minThree
+    then addClauses [[x, z, z]
+                    ,[y, z, z]
+                    ,[neg x, neg y, neg z]]
+    else addClauses [[x, z]
+                    ,[y, z]
+                    ,[neg x, neg y, neg z]]
   return z
 
 norGate :: Bit -> Bit -> SymEval Bit
@@ -239,22 +246,69 @@ muxGate s           x y = do
   return z
 
 -- n-bit multiplexer: depending on s, output xs or ys
-mux :: Bit -> [Bit] -> [Bit] -> SymEval [Bit]
-mux (Val False) xs _  = return xs
-mux (Val True)  _  ys = return ys
-mux s xs ys = zipWithMBits (muxGate s) xs ys
+muxNGate :: Bit -> [Bit] -> [Bit] -> SymEval [Bit]
+muxNGate (Val False) xs _  = return xs
+muxNGate (Val True)  _  ys = return ys
+muxNGate s xs ys = zipWithMBits (muxGate s) xs ys
+
+-- n-bit or-gate: check if any of the bits is True
+orNGate :: [Bit] -> SymEval Bit
+orNGate []  = return (Val False)
+orNGate [x] = return x
+orNGate xs  = do
+  y <- orNGate ys
+  z <- orNGate zs
+  orGate y z
+  where (ys, zs) = splitAt (length xs `div` 2) xs
+
+-- n-bit or-gate without output
+assertOrNGate :: [Bit] -> SymEval ()
+assertOrNGate xs = do
+  (_, maxThree, minThree) <- ask
+  if maxThree || minThree
+    then orNGate xs >> return ()
+    else addClauses [xs]
+
+-- n-bit and-gate: check if all bits are True
+andNGate :: [Bit] -> SymEval Bit
+andNGate []  = return (Val True)
+andNGate [x] = return x
+andNGate xs  = do
+  y <- andNGate ys
+  z <- andNGate zs
+  andGate y z
+  where (ys, zs) = splitAt (length xs `div` 2) xs
+       
+-- n-bit eq-gate: check if all bits in xs are equal to all ys
+eqNGate :: [Bit] -> [Bit] -> SymEval Bit
+eqNGate xs ys = do
+  debugComment $ show xs ++ " == " ++ show ys
+  zs <- zipWithMBits xnorGate xs ys
+  andNGate zs
 
 assertEqGate :: Bit -> Bit -> SymEval ()
 assertEqGate (Val x)     (Val y) = unless (x == y) $ error "assertEqGate"
 assertEqGate (Var x)     (Val y) = assertEqGate (Val y) (Var x)
 assertEqGate (Val False) y       = do
   debugComment $ show y ++ " == False"
-  addClauses [[neg y]]
+  (_, _, minThree) <- ask
+  if minThree
+    then addClauses [[neg y, neg y, neg y]]
+    else addClauses [[neg y]]
 assertEqGate (Val True ) y       = do
   debugComment $ show y ++ " == True"
-  addClauses [[y]]
+  (_, _, minThree) <- ask
+  if minThree
+    then addClauses [[y, y, y]]
+    else addClauses [[y]]
 assertEqGate x           y       = do
   debugComment $ show x ++ " == " ++ show y
+  (_, _, minThree) <- ask
+  if minThree
+    then addClauses [[x, neg y, neg y]
+                    ,[neg x, y, y]]
+    else addClauses [[x, neg y]
+                    ,[neg x, y]]
   addClauses [[x, neg y], [neg x, y]]
 
 assertFalseGate, assertTrueGate :: Bit -> SymEval ()
@@ -303,25 +357,31 @@ fullAdd x (Val y) ci = fullAdd x ci (Val y)
 fullAdd x y (Val ci) = if ci then halfSub x y else halfAdd x y
 
 fullAdd x y ci = do
+  (_, maxThree, _) <- ask
   debugComment $ "Start FA: " ++ show (x, y, ci)
-  s <- nextVar
-  addClauses [[neg x, neg y, neg ci,     s]
-             ,[neg x, neg y,     ci, neg s]
-             ,[neg x,     y, neg ci, neg s]
-             ,[neg x,     y,     ci,     s]
-             ,[    x, neg y, neg ci, neg s]
-             ,[    x, neg y,     ci,     s]
-             ,[    x,     y, neg ci,     s]
-             ,[    x,     y,     ci, neg s]]
-  co <- nextVar
-  addClauses [[neg x, neg y,             co]
-             ,[neg x,        neg ci,     co]
-             ,[    x,     y,         neg co]
-             ,[    x,            ci, neg co]
-             ,[       neg y, neg ci,     co]
-             ,[           y,     ci, neg co]]
-  debugComment $ "End FA: " ++ show (x, y, ci) ++ " -> " ++ show (s, co)
-  return (s, co)
+  if maxThree
+    then do (s1, c1) <- halfAdd x y
+            (s2, c2) <- halfAdd s1 ci
+            co <- orGate c1 c2
+            return (s2, co)
+    else do s <- nextVar
+            addClauses [[neg x, neg y, neg ci,     s]
+                       ,[neg x, neg y,     ci, neg s]
+                       ,[neg x,     y, neg ci, neg s]
+                       ,[neg x,     y,     ci,     s]
+                       ,[    x, neg y, neg ci, neg s]
+                       ,[    x, neg y,     ci,     s]
+                       ,[    x,     y, neg ci,     s]
+                       ,[    x,     y,     ci, neg s]]
+            co <- nextVar
+            addClauses [[neg x, neg y,             co]
+                       ,[neg x,        neg ci,     co]
+                       ,[    x,     y,         neg co]
+                       ,[    x,            ci, neg co]
+                       ,[       neg y, neg ci,     co]
+                       ,[           y,     ci, neg co]]
+            debugComment $ "End FA: " ++ show (x, y, ci) ++ " -> " ++ show (s, co)
+            return (s, co)
 
 -- test the entire truth table
 test_fullAdd = TestList
@@ -372,7 +432,7 @@ prop_rippleAdd (NonNegative x) (NonNegative y) =
 measure f = go 0
   where go i = (n-1, m) : go (i+1)
           where m = countClauses d
-                (n, d) = execRWS se cnfDebug 1
+                (n, d) = execRWS se (cnfDebug, maxThree, minThree) 1
                 se = do p <- replicateM i nextVar
                         q <- replicateM (i+1) nextVar
                         f p q
@@ -423,8 +483,8 @@ cla xs ys = do
             zs'' <- joinPairs zs'
             return (z : zs'')
           combine (s0, t0, g0, p0) (s1, t1, g1, p1) = do
-            s' <- mux g0 s1 t1
-            t' <- mux p0 s1 t1
+            s' <- muxNGate g0 s1 t1
+            t' <- muxNGate p0 s1 t1
             g <- andGate g0 p1 >>= orGate g1
             p <- andGate p0 p1 >>= orGate g1
             return (s0 ++ s', t0 ++ t', g, p)
@@ -498,6 +558,7 @@ factorMult mult n = do
   zipWithMBits assertEqGate out pq
   addComment $ "pq: " ++ show pq ++ " == " ++ show out
 
+
 -- factorRSA simplifies the instance somewhat by assuming the factors
 -- differ at length at most one bit and are both prime
 -- factorRSA :: Multiplier -> [Bool] -> SymEval ()
@@ -519,6 +580,28 @@ factorRSA mult n = do
   pq <- mult p q
   zipWithMBits assertEqGate out pq
   addComment $ "pq: " ++ show pq ++ " == " ++ show out
+
+-- factorMultiRSA is similar to factorRSA, but it allows for multiple
+-- semiprimes.  The instance is satisfied if the solver was able to
+-- find the factors of any semi-prime, not just a specific one.
+factorMultiRSA :: (Integral n, Show n) => MA -> [n] -> SymEval ()
+factorMultiRSA mult ns = do
+  let m = length ns
+      outs = map toBits ns
+      outLens = map length outs
+      outLen = head outLens
+      pLen = (outLen + 1) `quot` 2 - 1
+      qLen = (outLen + 2) `quot` 2 - 1
+  when (all (== outLen) (tail outLens)) $ do
+    debugComment $ "creating multiplication circuit with " ++ show outLen ++ "-bit output"
+    -- assuming odd prime-factors
+    p <- liftM (Val True :) (replicateM qLen nextVar)
+    q <- liftM (Val True :) (replicateM pLen nextVar)
+    addComment $ "p: " ++ show p
+    addComment $ "q: " ++ show q
+    pq <- mult p q
+    ys <- zipWithM eqNGate (replicate m pq) outs
+    assertOrNGate ys
 
 -- factorDivP :: Divider -> [Bool] -> SymEval ()
 -- divide by p: the (n-1) bit number
@@ -554,10 +637,10 @@ factorDivQ div n = do
 main = do
   args <- getArgs
   pname <- getProgName
-  unless (length args == 1) (error $ "Usage " ++ pname ++ " N\n")
-  let n = read $ head args
-      fact = factorRSA longMult
-  putStr . seToDimacs $ fact n
+  case args of
+    []  -> error $ "Usage " ++ pname ++ " [N]+"
+    [x] -> putStr . seToDimacs . factorRSA longMult . read $ x
+    xs  -> putStr . seToDimacs . factorMultiRSA longMult . map read $ xs
 
 return []
 runTests = $quickCheckAll
