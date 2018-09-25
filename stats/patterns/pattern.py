@@ -4,6 +4,7 @@ import numpy as np
 import numpy.polynomial.polynomial as poly
 import matplotlib.pyplot as plt
 from scipy import stats
+from sympy.ntheory.factor_ import smoothness
 import gmpy
 
 def rsquared(y, fit):
@@ -33,6 +34,10 @@ functions = [(lambda p, q: abs(p-q), '$|p-q|$', 'diff'),
              (lambda p, q: gmpy.popcount(p), 'Hamming weight $p$', 'hwp'),
              (lambda p, q: gmpy.popcount(q), 'Hamming weight $q$', 'hwq'),
              (lambda p, q: gmpy.hamdist(p, q), 'Hamming weight $p \oplus q$', 'hdpq'),
+             (lambda p, q: gmpy.hamdist(p, q), 'Hamming weight $p \oplus q$', 'hdpq'),
+             (lambda p, q: smoothness(p-1)[0], 'Smoothness of $p-1$', 'smp'),
+             (lambda p, q: smoothness(q-1)[0], 'Smoothness of $q-1$', 'smq'),
+             (lambda p, q: smoothness(p-1)[0] + smoothness(q-1)[0], 'Smoothness of $p-1$ and $q-1$', 'smpq'),
           ]
 
 for f, desc, fout in functions:
