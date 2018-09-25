@@ -20,6 +20,8 @@ for line in sys.stdin:
         continue
     words = line.split()
     n, p, q, pq, s = map(int, words[:5])
+    if n > 50:
+        continue # not enough samples for meaningful interpretation
     t = float(words[5])
     times[n].append(t)
 
