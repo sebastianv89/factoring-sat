@@ -15,9 +15,6 @@ for line in sys.stdin:
     if line.startswith('#'):
         continue
     n, p, q, pq = map(int, line.split())
-    if n < 30:
-        print('skipping small instances ({})'.format(n), file=sys.stderr)
-        continue
     solved_file_templ = './solved/{:03}_{}_{}_solution_{}.dimacs'.format(n, p, q, '{}');
     if any(True for _ in glob.iglob(solved_file_templ.format('*'))):
         print('skipping solved {}'.format(solved_file_templ), file=sys.stderr)

@@ -2,9 +2,8 @@ solve: solve.py
 	python3 $< <../../semiprimes.txt
 .PHONY: solve
 
-plot: plot.py
-	python3 $< <timing.txt
-.PHONY: plot
+plot.png: plot.py
+	python3 $< <timing.txt >plot.png 2>plot.out
 
 solutions.7z:
 	7z a $@ solved/*.dimacs
