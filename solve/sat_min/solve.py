@@ -11,22 +11,27 @@ def signal_handler(signal, frame):
     sys.exit(0)
 signal.signal(signal.SIGINT, signal_handler)
 
+if len(sys.argv) > 1:
+    encoding = sys.argv[1]
+else:
+    encoding = 'long'
+
 for line in sys.stdin:
     if line.startswith('#'):
         continue
     n, p, q, pq = map(int, line.split())
-    solved_file_templ = './solved/{:03}_{}_{}_solution_{}.dimacs'.format(n, p, q, '{}');
+    solved_file_templ = './solved_{}/{:03}_{}_{}_solution_{}.dimacs'.format(encoding, n, p, q, '{}');
     if any(True for _ in glob.iglob(solved_file_templ.format('*'))):
         print('skipping solved {}'.format(solved_file_templ), file=sys.stderr)
         continue
-    instance_file = '../../instances/long/{:03}_{}_{}.dimacs'.format(n, p, q)
+    instance_file = '../../instances/{}/{:03}_{}_{}.dimacs'.format(encoding, n, p, q)
     if not os.path.exists(instance_file):
         print('skipping non-existing {}'.format(instance), file=sys.stderr)
         continue
     with open(instance_file, 'rb') as fin:
         instance = fin.read()
     call_templ = './maplecomsps -rnd-init -rnd-seed={}'
-    time_bound = int(math.ceil(2**-21.09 * 2**(0.523*n))) # estimated minimum solve time
+    time_bound = int(math.ceil(2.0**(0.516*n - 20.84))) # estimated minimum solve time
     best_time, best_seed, solver_output = float('inf'), None, None
     for i in range(6):
         for seed in range(1, 101): # testing 100 different seeds
@@ -47,12 +52,12 @@ for line in sys.stdin:
         time_bound *= 2
     if solver_output is None:
         print('No solution found for {}'.format(instance_file))
-        with open('./unsolved.txt', 'a') as fout:
+        with open('./unsolved_{}.txt'.format(encoding), 'a') as fout:
             fout.write('{} {} {} {} {}\n'.format(n, p, q, pq, best_time));
     else:
         cnt[i] += 1;
         solved_file = solved_file_templ.format(best_seed)
         with open(solved_file, 'wb') as fout:
             fout.write(solver_output)
-        with open('./timing.txt', 'a') as ftime:
+        with open('./timing_{}.txt'.format(encoding), 'a') as ftime:
             ftime.write('{} {} {} {} {} {}\n'.format(n, p, q, pq, best_seed, best_time))

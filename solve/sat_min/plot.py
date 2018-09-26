@@ -70,10 +70,12 @@ plt.plot(xx, np.exp2(yfit(xx)), 'g')
 plt.plot(xx, np.exp2(min_yf(xx)), 'c')
 
 # label data etc.
+s = 5 # step size for labels
+xlabels = [xs[0]] + list(range(s * ((xs[0]+s-1) // s), s*((xs[-1]+s-1) // s), s)) + [xs[-1]]
 plt.yscale('log')
-# ax = plt.gca()
-# ax.set_xticks(xs)
-# ax.set_xticklabels(xs)
+ax = plt.gca()
+ax.set_xticks(xlabels)
+ax.set_xticklabels(xlabels)
 plt.xlabel('$n$: Semiprime length (bits)')
 plt.ylabel('$T(n)$: Time (seconds)')
 if len(sys.argv) < 2:
