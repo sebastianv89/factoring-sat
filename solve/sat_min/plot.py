@@ -23,7 +23,7 @@ for line in sys.stdin:
         continue
     words = line.split()
     n, p, q, pq, s = map(int, words[:5])
-    if n > 55:
+    if n > 50:
         continue # not enough samples for meaningful interpretation
     t = float(words[5])
     times[n].append(t)
@@ -43,6 +43,7 @@ med_ys = list(map(np.median, yy))
 ycoefs = poly.polyfit(xx, np.log2(med_ys), 1)
 yfit = poly.Polynomial(ycoefs)
 yrsquared = rsquared(np.log2(med_ys), yfit(xx))
+label_med = '$2^{{ {:.3g}n {:.3g} }} (r^2 = {:.3g})$'.format(yfit.coef[1], yfit.coef[0], yrsquared)
 print('yfit: {} (r^2: {})'.format(yfit, yrsquared), file=sys.stderr)
 
 # compute the X-percentile: set initial bound for solving timeout here so that
@@ -59,15 +60,16 @@ min_ys = [min(y) for y in yy]
 min_yc = poly.polyfit(xx, np.log2(min_ys), 1)
 min_yf = poly.Polynomial(min_yc)
 min_yr2 = rsquared(np.log2(min_ys), min_yf(xx))
+label_min = '$2^{{ {:.3g}n {:.3g} }} (r^2 = {:.3g})$'.format(min_yf.coef[1], min_yf.coef[0], min_yr2)
 print('ymin: {} (r^2: {})'.format(min_yf, min_yr2), file=sys.stderr)
 
 # plot the data
 plt.boxplot(ys, positions=xs)
 
 # plot the fits
-plt.plot(xx, np.exp2(yfit(xx)), 'g')
+plt.plot(xx, np.exp2(yfit(xx)), 'g', label=label_med)
 #plt.plot(xx, np.exp2(pct_yf(xx)), 'c')
-plt.plot(xx, np.exp2(min_yf(xx)), 'c')
+plt.plot(xx, np.exp2(min_yf(xx)), 'r', label=label_min)
 
 # label data etc.
 s = 5 # step size for labels
@@ -76,8 +78,10 @@ plt.yscale('log')
 ax = plt.gca()
 ax.set_xticks(xlabels)
 ax.set_xticklabels(xlabels)
+#plt.title('Solver time (minimum of 100 seeds)')
 plt.xlabel('$n$: Semiprime length (bits)')
 plt.ylabel('$T(n)$: Time (seconds)')
+plt.legend(loc='upper left')
 if len(sys.argv) < 2:
     plt.savefig(sys.stdout.buffer, bbox_inches='tight')
 else:

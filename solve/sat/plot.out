@@ -1,0 +1,48 @@
+median
+cryptominisat5 long
+fit (median): poly([-18.2803794    0.57840651]) (r^2: 0.9963829082141861)
+fit (minimum): poly([-14.90715163   0.33005335]) (r^2: 0.800997312334679)
+mean
+cryptominisat5 long
+fit (median): poly([-18.2803794    0.57840651]) (r^2: 0.9963829082141861)
+fit (minimum): poly([-14.90715163   0.33005335]) (r^2: 0.800997312334679)
+min
+cryptominisat5 long
+fit (median): poly([-18.2803794    0.57840651]) (r^2: 0.9963829082141861)
+fit (minimum): poly([-14.90715163   0.33005335]) (r^2: 0.800997312334679)
+median
+cryptominisat5 karatsuba
+fit (median): poly([-15.74443705   0.55118784]) (r^2: 0.9643408612936792)
+fit (minimum): poly([-14.92535175   0.40947321]) (r^2: 0.9345983963132947)
+mean
+cryptominisat5 karatsuba
+fit (median): poly([-15.74443705   0.55118784]) (r^2: 0.9643408612936792)
+fit (minimum): poly([-14.92535175   0.40947321]) (r^2: 0.9345983963132947)
+min
+cryptominisat5 karatsuba
+fit (median): poly([-15.74443705   0.55118784]) (r^2: 0.9643408612936792)
+fit (minimum): poly([-14.92535175   0.40947321]) (r^2: 0.9345983963132947)
+median
+maplecomsps long
+fit (median): poly([-16.52860974   0.49554474]) (r^2: 0.9930085855190922)
+fit (minimum): poly([-18.64136311   0.49692697]) (r^2: 0.9911850790610841)
+mean
+maplecomsps long
+fit (median): poly([-16.4327694    0.49493305]) (r^2: 0.9946070830396514)
+fit (minimum): poly([-17.81342144   0.49380493]) (r^2: 0.9925437555962373)
+min
+maplecomsps long
+fit (median): poly([-18.33992813   0.5026624 ]) (r^2: 0.9928065996659035)
+fit (minimum): poly([-18.23279674   0.38235612]) (r^2: 0.8580464466720646)
+median
+maplecomsps karatsuba
+fit (median): poly([-14.57531661   0.4914551 ]) (r^2: 0.9872105889110466)
+fit (minimum): poly([-14.55851449   0.41168182]) (r^2: 0.9488732879176983)
+mean
+maplecomsps karatsuba
+fit (median): poly([-14.46247958   0.49061422]) (r^2: 0.987399501274244)
+fit (minimum): poly([-14.2645375    0.40723793]) (r^2: 0.9542435675020984)
+min
+maplecomsps karatsuba
+fit (median): poly([-14.85694307   0.45987713]) (r^2: 0.9885530213878165)
+fit (minimum): poly([-13.61445312   0.32102135]) (r^2: 0.8385147903113258)

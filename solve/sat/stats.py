@@ -14,8 +14,8 @@ for line in sys.stdin:
     times = list(map(float, words[4:]))
     if stat == 'median':
         y = np.median(times)
-    elif stat == 'std':
-        y = np.std(times)
+    elif stat == 'mean':
+        y = np.mean(times)
     elif stat == 'min':
         y = min(times)
     else:

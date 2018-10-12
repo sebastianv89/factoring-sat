@@ -7,7 +7,7 @@ check: ./check.py
 .PHONY: check
 
 plot.png: ./plot.py timing.txt
-	python3 plot.py <timing.txt >plot.png
+	python3 plot.py <timing.txt >plot.png 2>plot.out
 
 solutions.7z:
 	7z a $@ solved/*.dimacs

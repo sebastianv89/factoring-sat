@@ -11,7 +11,7 @@ stats: stats.sh stats.py collect
 .PHONY: stats
 
 plot: plot.sh plot.py stats
-	bash $<
+	bash $< 2> plot.out
 .PHONY: plot
 
 solutions.7z:

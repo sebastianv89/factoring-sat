@@ -65,6 +65,7 @@ for n in range(4, 101):
             factored[(p,q)] += 1
         else:
             print('invalid solution: {:03} ({}): {} * {} = {} ({})'.format(n, seed, p, q, p*q, found))
-    for ((p,q), count) in factored.most_common(5):
+    #for ((p,q), count) in factored.most_common(5):
+    for ((p,q), count) in factored.items():
         print('{:2} bits: {:x} * {:x} = {:x} found {} times'.format(n, p, q, p*q, count))
     
