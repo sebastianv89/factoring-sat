@@ -23,6 +23,7 @@ primes and combining the results with a massive or-gate.  Thus if
 there is one easy number to factor, we may hope that the SAT solver
 is able to find it and focus on factoring that number.  (Although
 from the results we conclude it is not able to find such a number.)
+The `zoom` directory inspects some interesting distributions.
 
 The Karatsuba instances were generated with
 [ToughSat](https://toughsat.appspot.com/).  Reproducing the instances
