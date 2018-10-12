@@ -1,7 +1,10 @@
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
 from collections import defaultdict
+
+mpl.style.use('classic')
 
 times = defaultdict(list)
 for line in sys.stdin:
@@ -21,6 +24,6 @@ ax = plt.gca()
 ax.set_xticks([xs[0]] + list(range(10, 91, 10)) + [xs[-1]])
 ax.set_xticklabels([xs[0]] + list(range(10, 91, 10)) + [xs[-1]])
 plt.ylim([0, 0.025])
-plt.xlabel('Semiprime length (bits)')
-plt.ylabel('Time (seconds)')
+plt.xlabel('$n$: Semiprime length (bits)')
+plt.ylabel('$T(n)$: Time (seconds)')
 plt.savefig(sys.stdout.buffer, bbox_inches='tight')

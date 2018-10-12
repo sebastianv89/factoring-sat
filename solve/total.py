@@ -28,7 +28,7 @@ with open('sat_min/timing.txt') as f:
     for line in f:
         if line.startswith('#'):
             continue
-        total += float(line.split()[5]);
+        total += 100.0 * float(line.split()[5]); # min time spent solving with 100 seeds
 
 with open('sat_multi/timing.txt') as f:
     for line in f:
