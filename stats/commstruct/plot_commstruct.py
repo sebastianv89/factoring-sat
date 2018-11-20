@@ -1,9 +1,12 @@
 import sys
 from collections import defaultdict
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.polynomial.polynomial as poly
 from scipy import stats
+
+mpl.style.use('classic')
 
 def rsquared(y, fit):
     y_mean = np.mean(y)
@@ -27,7 +30,7 @@ for n, d in data.items():
     xs, ys = zip(*d)
     ycoefs = poly.polyfit(xs, ys, 1)
     yfit = poly.Polynomial(ycoefs)
-    yrsquared = rsquared(ys, yfit(xs))
+    yrsquared = rsquared(ys, yfit(np.array(xs)))
     plt.plot(xs, ys, '.', label='$n={}; r^2={:.2f}$'.format(n, yrsquared), color=colors[n%len(colors)])
     linx = np.linspace(min(xs), max(xs), 100)
     plt.plot(linx, yfit(linx), color=colors[n%len(colors)])
