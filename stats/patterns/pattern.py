@@ -5,7 +5,7 @@ import numpy.polynomial.polynomial as poly
 import matplotlib.pyplot as plt
 from scipy import stats
 from sympy.ntheory.factor_ import smoothness
-import gmpy
+import gmpy2
 
 def rsquared(y, fit):
     y_mean = np.mean(y)
@@ -30,11 +30,11 @@ colors = ['b', 'g', 'r', 'k', 'm', 'y', 'c',]
 
 functions = [(lambda p, q: abs(p-q), '$|p-q|$', 'diff'),
              (lambda p, q: np.log2(p*q), '$\log_2 N$', 'size'),
-             (lambda p, q: gmpy.popcount(p*q), 'Hamming weight $N$', 'hwN'),
-             (lambda p, q: gmpy.popcount(p), 'Hamming weight $p$', 'hwp'),
-             (lambda p, q: gmpy.popcount(q), 'Hamming weight $q$', 'hwq'),
-             (lambda p, q: gmpy.hamdist(p, q), 'Hamming weight $p \oplus q$', 'hdpq'),
-             (lambda p, q: gmpy.hamdist(p, q), 'Hamming weight $p \oplus q$', 'hdpq'),
+             (lambda p, q: gmpy2.popcount(p*q), 'Hamming weight $N$', 'hwN'),
+             (lambda p, q: gmpy2.popcount(p), 'Hamming weight $p$', 'hwp'),
+             (lambda p, q: gmpy2.popcount(q), 'Hamming weight $q$', 'hwq'),
+             (lambda p, q: gmpy2.hamdist(p, q), 'Hamming weight $p \oplus q$', 'hdpq'),
+             (lambda p, q: gmpy2.hamdist(p, q), 'Hamming weight $p \oplus q$', 'hdpq'),
              (lambda p, q: smoothness(p-1)[0], 'Smoothness of $p-1$', 'smp'),
              (lambda p, q: smoothness(q-1)[0], 'Smoothness of $q-1$', 'smq'),
              (lambda p, q: smoothness(p-1)[0] + smoothness(q-1)[0], 'Smoothness of $p-1$ and $q-1$', 'smpq'),
@@ -49,7 +49,7 @@ for f, desc, fout in functions:
         xs = [f(p,q) for p, q in pqs]
         tcoefs = poly.polyfit(xs, ts, 1)
         tfit = poly.Polynomial(tcoefs)
-        trsquared = rsquared(ts, tfit(xs))
+        trsquared = rsquared(ts, tfit(np.array(xs)))
         plt.plot(xs, ts, '.', label='$n={}; r^2={:.2f}$'.format(n, trsquared), color=colors[n%len(colors)])
         linx = np.linspace(min(xs), max(xs), 100)
         plt.plot(linx, tfit(linx), color=colors[n%len(colors)])

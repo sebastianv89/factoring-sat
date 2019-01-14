@@ -58,8 +58,10 @@ print('fit (minimum): {} (r^2: {})'.format(ymin_fit, ymin_rsquared), file=sys.st
 label_med = '$2^{{ {:.3g}n{:.3g} }} (r^2 = {:.3g})$'.format(ymed_fit.coef[1], ymed_fit.coef[0], ymed_rsquared)
 label_min = '$2^{{ {:.3g}n{:.3g} }} (r^2 = {:.3g})$'.format(ymin_fit.coef[1], ymin_fit.coef[0], ymin_rsquared)
 plt.plot(xx, np.exp2(ymed_fit(xx)), 'g', label=label_med)
-plt.plot(xx, np.exp2(ymin_fit(xx)), 'r', label=label_min)
+# min is not relevant with so few samples
+#plt.plot(xx, np.exp2(ymin_fit(xx)), 'r', label=label_min)
 plt.xlim([xs[0], xs[-1]])
+plt.ylim([10.0**-3.5, 10.0**4])
 plt.boxplot(ys, positions=xs)
 ax = plt.gca()
 ax.set_xticks([xs[0]] + list(range(10, xs[-1], 10)) + [xs[-1]])
