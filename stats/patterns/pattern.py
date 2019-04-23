@@ -56,4 +56,4 @@ for f, desc, fout in functions:
     plt.xlabel(desc)
     plt.ylabel('Time (seconds)')
     plt.legend(loc='best')
-    plt.savefig(encoding + '_' + fout + '.png', bbox_inches='tight')
+    plt.savefig(encoding + '_' + fout + '.pdf', bbox_inches='tight',)
