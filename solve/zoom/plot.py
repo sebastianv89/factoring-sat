@@ -61,7 +61,7 @@ def plot_data(timing, interesting, n=35):
     axes[1,1].set_ylabel('# solutions')
 
     plt.tight_layout()
-    plt.savefig('dist_{}.png'.format(n))
+    plt.savefig('dist_{}.pdf'.format(n))
 
 
     for xlog in [False, True]:
@@ -106,7 +106,7 @@ def plot_data(timing, interesting, n=35):
         axes[2].set_ylabel('# solutions')
 
         plt.tight_layout()
-        plt.savefig('zoomed{}_{}.png'.format('_log' if xlog else '', n))
+        plt.savefig('zoomed{}_{}.pdf'.format('_log' if xlog else '', n))
 
 def main():
     for bitsize in [30, 35]:

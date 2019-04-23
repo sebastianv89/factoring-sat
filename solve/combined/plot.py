@@ -69,7 +69,7 @@ def plot():
     #plt.ylim(top=10.0**18.0)
     plt.legend(loc='best')
     plt.tight_layout()
-    plt.savefig('combined.png');
+    plt.savefig('combined.pdf');
 
 def main():
     plot()

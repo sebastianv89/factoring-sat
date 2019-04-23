@@ -3,7 +3,7 @@ for solv in 'cryptominisat5' 'maplecomsps'; do
         if [ -d "$solv/$enc" ]; then
             for stat in 'median' 'mean' 'min'; do
                 (>&2 echo $stat)
-                (cd "$solv/$enc"; python3 ../../plot.py "$solv" "$enc" "$stat" <$stat.txt >$stat.png)
+                (cd "$solv/$enc"; python3 ../../plot.py "$solv" "$enc" "$stat" <$stat.txt >$stat.pdf)
             done
         fi
     done
