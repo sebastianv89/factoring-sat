@@ -1,7 +1,7 @@
 ## Factoring semi-primes with SAT solvers
 
 This repository contains scripts and data complementary to the
-[paper](#TODO insert link).
+paper [Factoring semi-primes with (quantum) SAT-solvers](https://arxiv.org/abs/1902.01448).
 
 Most of the scripts are pretty small and self-explanatory.  In
 addition most directories contain Makefiles that should give a clear
