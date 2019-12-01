@@ -83,7 +83,7 @@ plt.xlabel('$n$: Semiprime length (bits)')
 plt.ylabel('$T(n)$: Time (seconds)')
 plt.legend(loc='upper left')
 if len(sys.argv) < 2:
-    plt.savefig(sys.stdout.buffer, bbox_inches='tight', format='pdf')
+    plt.savefig(sys.stdout.buffer, bbox_inches='tight', format='eps')
 else:
     # focus on one particular bitsize n
     _, bins, _ = plt.hist(times[int(sys.argv[1])])

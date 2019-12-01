@@ -62,4 +62,4 @@ plt.xlabel('$n$: Semiprime length (bits)')
 plt.ylabel('$T(n)$: Time (seconds)')
 plt.legend(loc='upper left')
 
-plt.savefig(sys.stdout.buffer, bbox_inches='tight', format='pdf')
+plt.savefig(sys.stdout.buffer, bbox_inches='tight', format='eps')

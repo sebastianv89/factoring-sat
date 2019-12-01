@@ -6,7 +6,7 @@ check: ./check.py
 	python3.6 check.py
 .PHONY: check
 
-plot.pdf: ./plot.py timing.txt
+plot.eps: ./plot.py timing.txt
 	python3 $< <timing.txt >$@ 2>plot.out
 
 solutions.7z:

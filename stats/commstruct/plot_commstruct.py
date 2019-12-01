@@ -38,4 +38,4 @@ for n, d in data.items():
 plt.xlabel('Instance modularity (Q)')
 plt.ylabel('Time (seconds)')
 plt.legend(loc='best')
-plt.savefig(sys.stdout.buffer, bbox_inches='tight', format='pdf')
+plt.savefig(sys.stdout.buffer, bbox_inches='tight', format='eps')
