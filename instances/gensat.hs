@@ -141,7 +141,7 @@ instance Arbitrary Clause where
   shrink (Comment c) = [Comment c' | c' <- shrink c]
 
 newtype Cnf = Cnf { getCnf :: [Clause] }
-            deriving (Eq, Show, Arbitrary, Monoid)
+            deriving (Eq, Show, Arbitrary, SemiGroup, Monoid)
 
 removeValues :: Cnf -> Cnf
 removeValues = Cnf . map removeFalse . filter removeTrue . getCnf

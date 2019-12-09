@@ -175,6 +175,8 @@ def plot_many(title, data, both):
     pyplot.show()
     pyplot.close(fig)
 
+def plot_more(
+
 def plot_all(data, size):
     fig = pyplot.figure(figsize=(8.5, 11), dpi=200)
     pyplot.subplots_adjust(left=.1, right=.95, bottom=.05, top=.95, wspace=.3, hspace=.3)

@@ -47,7 +47,7 @@ def solve_size(size):
             solve(timing, f'{subdir}/{fin}', fin)
 
 def main():
-    for size in range(20, 51):
+    for size in range(20, 46):
         print(size)
         solve_size(size)
 
